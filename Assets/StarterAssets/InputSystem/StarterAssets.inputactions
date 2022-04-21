@@ -42,13 +42,13 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ForcePull",
-                    "type": "PassThrough",
+                    "name": "AcquireObject",
+                    "type": "Value",
                     "id": "71afaa59-c0ca-45db-88d6-90270e5d6788",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -235,7 +235,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ForcePull",
+                    "action": "AcquireObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
