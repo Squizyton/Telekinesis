@@ -12,7 +12,8 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
-
+		
+		public bool Throw;
 		
 		public bool acquireObject;
 		
@@ -51,6 +52,11 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+
+		public void OnThrow(InputValue value)
+		{
+			ThrowInput(value.isPressed);
+		}
 #else
 	// old input sys if we do decide to have it (most likely wont)...
 #endif
@@ -70,6 +76,12 @@ namespace StarterAssets
 		{
 			jump = newJumpState;
 		}
+
+		public void ThrowInput(bool newThrowState)
+		{
+			Throw = newThrowState;
+		}
+
 		public void AcquireObjectInput(bool newPullState)
 		{
 			acquireObject = newPullState;
