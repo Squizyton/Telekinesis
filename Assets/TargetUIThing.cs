@@ -6,7 +6,6 @@ public class TargetUIThing : MonoBehaviour
 {
     public Vector3 gotoPoint;
     public GameObject player;
-    public Transform cam;
 
     public void Update()
     {

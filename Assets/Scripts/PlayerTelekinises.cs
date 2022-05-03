@@ -32,9 +32,6 @@ public class PlayerTelekinises : MonoBehaviour
     [Header("Throw Variables")] [SerializeField]
     private float throwForce;
 
-
-    private GameObject cachedHit;
-
     private void Start()
     {
         //If the teleUI is active, turn it off
@@ -49,23 +46,20 @@ public class PlayerTelekinises : MonoBehaviour
         //Make a ray that goes from the camera to the middle of the screen
         var ray = mainCamera.ScreenPointToRay(screenPoint);
         //Shoot out a raycast
-        if (Physics.Raycast(ray, out var hit, pullDistance, layerMask))
+        if (Physics.Raycast(ray, out var hit, pullDistance, layerMask) && !teleObject)
         {
             //If the raycast hits something
-            if (hit.transform != null && hit.transform.gameObject != cachedHit)
+            if (hit.transform)
             {
-                cachedHit = hit.transform.gameObject;
-
                 if (!teleTargetUI.gameObject.activeSelf)
                 {
                     teleTargetUI.gameObject.SetActive(true);
-                    teleTargetUI.GivePos(hit.transform.position);
                 }
+                teleTargetUI.GivePos(hit.transform.position);
             }
         }
         else
         {
-            cachedHit = null;
             teleTargetUI.gameObject.SetActive(false);
         }
         #endregion
@@ -76,6 +70,7 @@ public class PlayerTelekinises : MonoBehaviour
             //Get the position in the middle of the screen
             teleTargetUI.gameObject.SetActive(false);
             pullingObject = hit.transform;
+            
             anim.SetBool("Pull", true);
         }
 
@@ -97,10 +92,8 @@ public class PlayerTelekinises : MonoBehaviour
     private void PullObject(Transform transform)
     {
         var obj = transform.GetComponent<Pullable>();
-        //Set the rigidbody to kinematic
-        obj.Rb.useGravity = false;
         //obj.Rb.isKinematic = true;
-
+        obj.GetPulled();
         //Move the transform to the telekinesis point
         transform.position = Vector3.Lerp(transform.position, telekinesisPoint.position, Time.deltaTime * pullForce);
 
@@ -128,16 +121,13 @@ public class PlayerTelekinises : MonoBehaviour
 
     private void ThrowObject()
     {
-        //Get the rigidbody of the object
-        var obj = teleObject.GetComponent<Rigidbody>();
-        //Set the rigidbody to use  gravity
+        var obj = teleObject.GetComponent<Pullable>();
 
-        obj.GetComponent<Pullable>().pulled = false;
-
-        obj.useGravity = true;
-
+        obj.GotThrown();
+        
         //Remove Parent
         obj.transform.SetParent(null);
+        
 
         //Aim direction to center of screen
 
@@ -151,10 +141,9 @@ public class PlayerTelekinises : MonoBehaviour
         {
             direction = hit.point - telekinesisPoint.transform.position;
         }
-
-
+        
         //Add Force to the object
-        obj.AddRelativeForce(this.transform.forward * throwForce, ForceMode.Impulse);
+        obj.Rb.AddForce(mainCamera.transform.forward * throwForce, ForceMode.Impulse);
 
         //Reset the object
         teleObject = null;
