@@ -11,7 +11,7 @@ public class PlayerTelekinises : MonoBehaviour
 
     [Header("Camera")] public Camera mainCamera;
 
-    [Header("UI")] public RotateTowardsPlayer teleTargetUI;
+    [Header("UI")] public TargetUIThing teleTargetUI;
 
     [Header("Player Variables")] [SerializeField]
     private StarterAssetsInputs inputs;
@@ -59,9 +59,8 @@ public class PlayerTelekinises : MonoBehaviour
                 if (!teleTargetUI.gameObject.activeSelf)
                 {
                     teleTargetUI.gameObject.SetActive(true);
+                    teleTargetUI.GivePos(hit.transform.position);
                 }
-
-                teleTargetUI.UpdateRotation();
             }
         }
         else
@@ -69,19 +68,8 @@ public class PlayerTelekinises : MonoBehaviour
             cachedHit = null;
             teleTargetUI.gameObject.SetActive(false);
         }
-
         #endregion
-
-
-        if (teleTargetUI.gameObject.activeSelf)
-        {
-            if (teleTargetUI.UpdatePositionDistance(hit.point) > 0.1f)
-            {
-                teleTargetUI.UpdatePosition(hit.point);
-            }
-        }
-
-
+        
         if (inputs.acquireObject && !readyToThrow && hit.transform != null)
         {
             anim.SetBool("Throw", false);
