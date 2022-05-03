@@ -55,6 +55,7 @@ public class PlayerTelekinises : MonoBehaviour
                 {
                     teleTargetUI.gameObject.SetActive(true);
                 }
+
                 teleTargetUI.GivePos(hit.transform.position);
             }
         }
@@ -62,15 +63,16 @@ public class PlayerTelekinises : MonoBehaviour
         {
             teleTargetUI.gameObject.SetActive(false);
         }
+
         #endregion
-        
+
         if (inputs.acquireObject && !readyToThrow && hit.transform != null)
         {
             anim.SetBool("Throw", false);
             //Get the position in the middle of the screen
             teleTargetUI.gameObject.SetActive(false);
             pullingObject = hit.transform;
-            
+
             anim.SetBool("Pull", true);
         }
 
@@ -121,31 +123,39 @@ public class PlayerTelekinises : MonoBehaviour
 
     private void ThrowObject()
     {
+        //rotate the player
         var obj = teleObject.GetComponent<Pullable>();
-
         obj.GotThrown();
-        
         //Remove Parent
         obj.transform.SetParent(null);
-        
-
         //Aim direction to center of screen
-
-
         var centerOfScreen = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
         var ray = mainCamera.ViewportPointToRay(centerOfScreen);
 
         var direction = (Vector3.zero - telekinesisPoint.transform.position).normalized;
 
         if (Physics.Raycast(ray, out var hit, pullDistance))
+            //Add Force to the object
         {
-            direction = hit.point - telekinesisPoint.transform.position;
+            Debug.Log(hit.point);
         }
+
         
-        //Add Force to the object
-        obj.Rb.AddForce(mainCamera.transform.forward * throwForce, ForceMode.Impulse);
+        //Todo: Fix rotation
+        var aimDir =Quaternion.LookRotation( new Vector3(transform.position.x, hit.point.y - transform.position.y, transform.position.z)
+            .normalized);
+        transform.rotation = Quaternion.Slerp(transform.rotation,aimDir,Time.deltaTime *30f);
+        teleObject = null;
+        
+        
+        obj.Rb.AddForce((mainCamera.transform.forward - hit.point) * throwForce, ForceMode.Impulse);
+            
+            
+            
+        teleObject = null;
+
 
         //Reset the object
-        teleObject = null;
+        
     }
 }
