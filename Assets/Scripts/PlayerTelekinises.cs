@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 public class PlayerTelekinises : MonoBehaviour
 {
     //TODO Refactor all of this
-    //TODO: Add a cooldown to the telekinisis, so it can't be spammed
+   //TODO: Throwing and picking up is still a bit buggy
     //
 
 
@@ -56,21 +56,10 @@ public class PlayerTelekinises : MonoBehaviour
         //Shoot out a raycast
         if (Physics.Raycast(ray, out var hit, pullDistance, layerMask) && !teleObject && canUse)
         {
-            
-            
             //If the raycast hits something
-            if (hit.transform)
-            {
-
-                if (hit.transform.GetComponent<Pullable>().thrown) return;
-                
-                if (!teleTargetUI.gameObject.activeSelf)
-                {
-                    teleTargetUI.gameObject.SetActive(true);
-                }
-
+            if (hit.transform.GetComponent<Pullable>().thrown) return;
+                teleTargetUI.gameObject.SetActive(true);
                 teleTargetUI.GivePos(hit.transform.position);
-            }
         }
         else
         {
@@ -79,14 +68,14 @@ public class PlayerTelekinises : MonoBehaviour
 
         #endregion
 
-        if (inputs.acquireObject && !readyToThrow && hit.transform != null && canUse)
+        if (inputs.acquireObject && !readyToThrow && hit.transform && canUse)
         {
             anim.SetBool("Throw", false);
+            anim.SetBool("Pull", true);
             //Get the position in the middle of the screen
             teleTargetUI.gameObject.SetActive(false);
             pullingObject = hit.transform;
-
-            anim.SetBool("Pull", true);
+            
         }
 
         if (inputs.Throw && readyToThrow)
@@ -95,7 +84,6 @@ public class PlayerTelekinises : MonoBehaviour
             anim.SetBool("Throw", true);
             StartCoroutine(CoolDown());
             ThrowObject();
-            
             readyToThrow = false;
         }
 
@@ -115,6 +103,8 @@ public class PlayerTelekinises : MonoBehaviour
 
     private void PullObject(Transform transform)
     {
+        teleObject = transform.gameObject;
+        
         var obj = transform.GetComponent<Pullable>();
         //obj.Rb.isKinematic = true;
         obj.GetPulled();
@@ -134,7 +124,6 @@ public class PlayerTelekinises : MonoBehaviour
         transform.SetParent(telekinesisPoint);
 
         //Add this object to teleObject
-        teleObject = transform.gameObject;
         //Add random rotation to the object
         obj.pulled = true;
         //Tell Game we arent pulling anymore

@@ -12,17 +12,20 @@ public class Pullable : MonoBehaviour
     public bool pulled = false;
     public bool thrown = false;
     private Rigidbody rb { get; set; }
-
-    private Vector3 randomRotation;
-    
-    private BoxCollider boxCollider;
     public Rigidbody Rb => rb;
+    
+    
+    
+    [SerializeField]private Collider objCollider;
+    
+    
+    private Vector3 randomRotation;
     private void Start()
     {
         randomRotation = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
         pulled = false;
         rb = GetComponent<Rigidbody>();
-        boxCollider = GetComponent<BoxCollider>();
+       
     }
 
     private void Update()
@@ -38,7 +41,7 @@ public class Pullable : MonoBehaviour
     {
         //Turn off the box collider so it doesn't interfere with the player's movement or collide with anything
         rb.useGravity = false;
-        boxCollider.enabled = false;
+        objCollider.enabled = false;
     }
 
     public void GotThrown()
@@ -47,18 +50,6 @@ public class Pullable : MonoBehaviour
         pulled = false;
         thrown = true;
         rb.useGravity = true;
-        boxCollider.enabled = true;
-        
-    }
-
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (!thrown) return;
-        
-        Debug.Log(collider.gameObject.name);
-        
-        
-        if(collider.transform.CompareTag("Ground"))
-            thrown = false;
+        objCollider.enabled = true;
     }
 }
