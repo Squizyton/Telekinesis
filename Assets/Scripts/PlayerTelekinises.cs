@@ -8,6 +8,10 @@ using UnityEngine.UIElements;
 public class PlayerTelekinises : MonoBehaviour
 {
     //TODO Refactor all of this
+    //TODO: Add a cooldown to the telekinisis, so it can't be spammed
+    //
+
+
 
     [Header("Camera")] public Camera mainCamera;
 
@@ -15,12 +19,16 @@ public class PlayerTelekinises : MonoBehaviour
 
     [Header("Player Variables")] [SerializeField]
     private StarterAssetsInputs inputs;
-
     [SerializeField] private Transform telekinesisPoint;
     [SerializeField] private Animator anim;
     [SerializeField] private bool readyToThrow;
     [SerializeField] private GameObject teleObject;
 
+
+
+    [Header("Telekinisis Variables")] 
+    private const float coolDownTimer = 1f;
+    [SerializeField]private bool canUse = true;
 
     [Header("Pull Variables")] [SerializeField]
     private float pullForce;
@@ -46,11 +54,16 @@ public class PlayerTelekinises : MonoBehaviour
         //Make a ray that goes from the camera to the middle of the screen
         var ray = mainCamera.ScreenPointToRay(screenPoint);
         //Shoot out a raycast
-        if (Physics.Raycast(ray, out var hit, pullDistance, layerMask) && !teleObject)
+        if (Physics.Raycast(ray, out var hit, pullDistance, layerMask) && !teleObject && canUse)
         {
+            
+            
             //If the raycast hits something
             if (hit.transform)
             {
+
+                if (hit.transform.GetComponent<Pullable>().thrown) return;
+                
                 if (!teleTargetUI.gameObject.activeSelf)
                 {
                     teleTargetUI.gameObject.SetActive(true);
@@ -66,7 +79,7 @@ public class PlayerTelekinises : MonoBehaviour
 
         #endregion
 
-        if (inputs.acquireObject && !readyToThrow && hit.transform != null)
+        if (inputs.acquireObject && !readyToThrow && hit.transform != null && canUse)
         {
             anim.SetBool("Throw", false);
             //Get the position in the middle of the screen
@@ -78,9 +91,11 @@ public class PlayerTelekinises : MonoBehaviour
 
         if (inputs.Throw && readyToThrow)
         {
+            canUse = false;
             anim.SetBool("Throw", true);
+            StartCoroutine(CoolDown());
             ThrowObject();
-
+            
             readyToThrow = false;
         }
 
@@ -90,6 +105,13 @@ public class PlayerTelekinises : MonoBehaviour
             PullObject(pullingObject);
         }
     }
+
+    private IEnumerator CoolDown()
+    {
+        yield return new WaitForSeconds(coolDownTimer);
+        canUse = true;
+    }
+
 
     private void PullObject(Transform transform)
     {

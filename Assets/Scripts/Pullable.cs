@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 public class Pullable : MonoBehaviour
 {
     public bool pulled = false;
-    private bool thrown = false;
+    public bool thrown = false;
     private Rigidbody rb { get; set; }
 
     private Vector3 randomRotation;
@@ -51,11 +51,14 @@ public class Pullable : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (thrown && !collision.transform)
-        {
+        if (!thrown) return;
+        
+        Debug.Log(collider.gameObject.name);
+        
+        
+        if(collider.transform.CompareTag("Ground"))
             thrown = false;
-        }
     }
 }
