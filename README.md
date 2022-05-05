@@ -17,7 +17,7 @@ You will see this.
 
 # Controls
 
-Mouse Red Dot over and of the objects presented in the scene. You will see a Target UI appear on Objects throwable
+Red Dot is your crosshair. You will see a Target UI appear on Objects throwable, when the dot is over it
 
 ![image](https://user-images.githubusercontent.com/26948636/167020340-2101fb4e-751e-4891-ba75-45ae163d014b.png)
 
