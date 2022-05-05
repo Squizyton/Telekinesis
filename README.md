@@ -3,7 +3,7 @@ A Recreation of Telekinises from Control
 
 
 # To Use Project
-Download from GitHub and open up. Version created in was 2021.3.0f1
+Download from GitHub and open up. Unity Version created in was 2021.3.0f1
 
 Search for the Playground scene
 
