@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 /// <summary>
 /// This script will just allow us to tell the Telekinesis script that its pull-able
 /// </summary>
-public class Pullable : MonoBehaviour
+public abstract class Pullable : MonoBehaviour
 {
     public bool pulled = false;
     public bool thrown = false;
@@ -39,9 +39,9 @@ public class Pullable : MonoBehaviour
 
     public void GetPulled()
     {
+        objCollider.enabled = false;
         //Turn off the box collider so it doesn't interfere with the player's movement or collide with anything
         rb.useGravity = false;
-        objCollider.enabled = false;
     }
 
     public void GotThrown()
@@ -52,4 +52,6 @@ public class Pullable : MonoBehaviour
         rb.useGravity = true;
         objCollider.enabled = true;
     }
+
+    public abstract void SpecialInteraction();
 }

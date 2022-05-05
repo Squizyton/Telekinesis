@@ -10,6 +10,11 @@ public class ExplodingBarrel : Pullable
    [SerializeField]private float explosionRadius = 5f;
    public bool currentlyExploding = false;
    public LayerMask LayerMask;
+   [SerializeField]private float explosionDelay = 0.5f;
+   [SerializeField] private GameObject fireParticles;
+   [SerializeField] private GameObject explosionParticles;
+   
+   
    public void OnTriggerEnter(Collider other)
    {
        if(thrown)
@@ -17,37 +22,53 @@ public class ExplodingBarrel : Pullable
    }
 
 
+   public override void SpecialInteraction()
+   {
+       StartCoroutine(StartTimer());
+   }
+
+   IEnumerator StartTimer()
+   {
+       fireParticles.SetActive(true);
+       yield return new WaitForSeconds(explosionDelay);
+       Explode();
+   }   
+   
+
    private void Explode()
    {
        currentlyExploding = true;
        
-       Debug.Log(gameObject.name + " is exploding");
+       Instantiate(explosionParticles, transform.position, Quaternion.identity);
        
-       var maxColliders = 50;
+       const int maxColliders = 50;
        var hitColliders = new Collider[maxColliders];
        //No garbage allocation and it's faster
        var numColliders = Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, hitColliders, LayerMask);
-       Debug.Log(numColliders);
        
-
-       for (int i = 0; i < numColliders; i++)
+       for (var i = 0; i < numColliders; i++)
        {
            var explosionAmount = UnityEngine.Random.Range(explosionForce.x, explosionForce.y);
            var obj = hitColliders[i].gameObject;
-           Debug.Log(obj.name);
+
+           
+           if(obj.TryGetComponent(out Pullable pullable))
+               pullable.SpecialInteraction();
+           
            
            if (obj.TryGetComponent(out ExplodingBarrel otherBarrel) && !otherBarrel.currentlyExploding)
            {
-               otherBarrel.Explode();
+               otherBarrel.SpecialInteraction();
+               return;
            }
 
            var rb = obj.GetComponent<Rigidbody>();
-           if (rb != null)
-           {
-               Debug.Log("adding force");
-               rb.AddForce(obj.transform.position - transform.position * explosionAmount * Time.deltaTime,
-                   ForceMode.Impulse);
-           }
+           
+           if (!rb) return;
+           
+           Debug.Log("adding force");
+           rb.AddForce(obj.transform.position - transform.position * (explosionAmount * Time.deltaTime),
+               ForceMode.Impulse);
        }
        Destroy(gameObject);
    }
