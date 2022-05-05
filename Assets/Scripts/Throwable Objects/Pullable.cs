@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,7 +14,6 @@ public abstract class Pullable : MonoBehaviour
     public bool thrown = false;
     private Rigidbody rb { get; set; }
     public Rigidbody Rb => rb;
-    
     
     
     [SerializeField]private Collider objCollider;
@@ -46,6 +46,7 @@ public abstract class Pullable : MonoBehaviour
 
     public void GotThrown()
     {
+      
         transform.rotation = Quaternion.Euler(Vector3.zero);
         pulled = false;
         thrown = true;

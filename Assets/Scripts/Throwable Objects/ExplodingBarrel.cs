@@ -52,21 +52,14 @@ public class ExplodingBarrel : Pullable
            var obj = hitColliders[i].gameObject;
 
            
+           //Call the special interaction method on the object
            if(obj.TryGetComponent(out Pullable pullable))
                pullable.SpecialInteraction();
            
            
-           if (obj.TryGetComponent(out ExplodingBarrel otherBarrel) && !otherBarrel.currentlyExploding)
-           {
-               otherBarrel.SpecialInteraction();
-               return;
-           }
-
            var rb = obj.GetComponent<Rigidbody>();
            
            if (!rb) return;
-           
-           Debug.Log("adding force");
            rb.AddForce(obj.transform.position - transform.position * (explosionAmount * Time.deltaTime),
                ForceMode.Impulse);
        }
