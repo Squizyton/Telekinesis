@@ -10,13 +10,14 @@ using Random = UnityEngine.Random;
 /// </summary>
 public abstract class Pullable : MonoBehaviour
 {
+    [Header("Inherited Values")]
     public bool pulled = false;
     public bool thrown = false;
     private Rigidbody rb { get; set; }
     public Rigidbody Rb => rb;
     
     
-    [SerializeField]private Collider objCollider;
+    [SerializeField]private Collider nonTriggerCollider;
     
     
     private Vector3 randomRotation;
@@ -39,9 +40,10 @@ public abstract class Pullable : MonoBehaviour
 
     public void GetPulled()
     {
-        objCollider.enabled = false;
-        //Turn off the box collider so it doesn't interfere with the player's movement or collide with anything
+       //Turn off the non-trigger collider so it doesn't interfere with the player's movement or collide with anything
+        nonTriggerCollider.enabled = false;
         rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezePosition;
     }
 
     public void GotThrown()
@@ -51,7 +53,8 @@ public abstract class Pullable : MonoBehaviour
         pulled = false;
         thrown = true;
         rb.useGravity = true;
-        objCollider.enabled = true;
+        nonTriggerCollider.enabled = true;
+        rb.constraints = RigidbodyConstraints.None;
     }
 
     public abstract void SpecialInteraction();

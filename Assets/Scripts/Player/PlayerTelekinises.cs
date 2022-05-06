@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
 using UnityEngine;
+using DG.Tweening;
 using UnityEngine.UIElements;
 
 public class PlayerTelekinises : MonoBehaviour
@@ -35,7 +36,7 @@ public class PlayerTelekinises : MonoBehaviour
 
     [SerializeField] private float pullDistance;
     [SerializeField] private LayerMask layerMask;
-    [SerializeField] private Transform pullingObject;
+    [SerializeField] private Pullable pullingObject;
 
     [Header("Throw Variables")] [SerializeField]
     private float throwForce;
@@ -48,8 +49,20 @@ public class PlayerTelekinises : MonoBehaviour
 
     void Update()
     {
+
+        if (pullingObject)
+        {
+            Debug.Log("Pulling");
+            PullObject(pullingObject);
+            return;
+        }
+
         #region Raycasting
 
+        
+        
+        
+        
         var screenPoint = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         //Make a ray that goes from the camera to the middle of the screen
         var ray = mainCamera.ScreenPointToRay(screenPoint);
@@ -58,40 +71,41 @@ public class PlayerTelekinises : MonoBehaviour
         {
             //If the raycast hits something
             if (hit.transform.GetComponent<Pullable>().thrown) return;
+            
                 teleTargetUI.gameObject.SetActive(true);
+                //Set the UI to the position of the object
                 teleTargetUI.GivePos(hit.transform.position);
         }
         else
         {
+            //If we aren't hitting anything, turn off the UI
             teleTargetUI.gameObject.SetActive(false);
         }
 
         #endregion
 
-        if (inputs.acquireObject && !readyToThrow && hit.transform && canUse)
+        //If we Right click, and the ability is off cool down and we are hitting something
+        if (inputs.acquireObject &&hit.transform && canUse)
         {
+            //Set the object we are pulling towards us to the object we are hitting
+            pullingObject = hit.transform.GetComponent<Pullable>();
+            //Set animation states
             anim.SetBool("Throw", false);
             anim.SetBool("Pull", true);
-            //Get the position in the middle of the screen
+            //Turn off UI
             teleTargetUI.gameObject.SetActive(false);
-            pullingObject = hit.transform;
-            
+            canUse = false;
         }
 
         if (inputs.Throw && readyToThrow)
         {
-            canUse = false;
             anim.SetBool("Throw", true);
             StartCoroutine(CoolDown());
             ThrowObject();
             readyToThrow = false;
         }
 
-
-        if (pullingObject != null)
-        {
-            PullObject(pullingObject);
-        }
+      
     }
 
     private IEnumerator CoolDown()
@@ -101,34 +115,21 @@ public class PlayerTelekinises : MonoBehaviour
     }
 
 
-    private void PullObject(Transform transform)
+    private void PullObject(Pullable obj)
     {
-        teleObject = transform.gameObject;
+        Debug.Log('a');
         
-        var obj = transform.GetComponent<Pullable>();
-        //obj.Rb.isKinematic = true;
         obj.GetPulled();
-        //Move the transform to the telekinesis point
-        transform.position = Vector3.Lerp(transform.position, telekinesisPoint.position, Time.deltaTime * pullForce);
-
-        //Check the distance between the object and the telekinesis point
+        //Make a vector from the telekinesis point to the object
+        
+       obj.transform.DOMove(telekinesisPoint.position, 0.1f);
+        
         var distance = Vector3.Distance(transform.position, telekinesisPoint.position);
 
-        //if the position of the object is not close to the telekinesis point return
-        if (distance > .2f) return;
-
-        //Set the anim.Trigget to pull
-        anim.SetBool("Pull", false);
-
-        //Set the transform's parent to the telekinesis point so it will follow us
-        transform.SetParent(telekinesisPoint);
-
-        //Add this object to teleObject
-        //Add random rotation to the object
-        obj.pulled = true;
-        //Tell Game we arent pulling anymore
+        if (!(distance > .2f)) return;
+        
+        teleObject = obj.transform.gameObject;
         pullingObject = null;
-        //We are ready to throw
         readyToThrow = true;
     }
 
@@ -150,23 +151,11 @@ public class PlayerTelekinises : MonoBehaviour
         {
             Debug.Log(hit.point);
         }
-
         
-        //Todo: Fix rotation
-        var aimDir =Quaternion.LookRotation( new Vector3(transform.position.x, hit.point.y - transform.position.y, transform.position.z)
-            .normalized);
-        transform.rotation = Quaternion.Slerp(transform.rotation,aimDir,Time.deltaTime *30f);
+        obj.Rb.AddForce(( hit.point - telekinesisPoint.position) * throwForce, ForceMode.Impulse);
+        
+        
+        //Set teleObject to null
         teleObject = null;
-        
-        
-        obj.Rb.AddForce((mainCamera.transform.forward - hit.point) * throwForce, ForceMode.Impulse);
-            
-            
-            
-        teleObject = null;
-
-
-        //Reset the object
-        
     }
 }

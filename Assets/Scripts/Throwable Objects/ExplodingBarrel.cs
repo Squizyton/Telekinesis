@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ExplodingBarrel : Pullable
 {
+    
+    [Header("Class Variables")]
    [SerializeField]private Vector2 explosionForce;
    [SerializeField]private float explosionRadius = 5f;
    public bool currentlyExploding = false;
@@ -40,6 +42,7 @@ public class ExplodingBarrel : Pullable
        currentlyExploding = true;
        
        Instantiate(explosionParticles, transform.position, Quaternion.identity);
+       CinemachineShake.instance.ShakeCamera(6,.5f);
        
        const int maxColliders = 50;
        var hitColliders = new Collider[maxColliders];

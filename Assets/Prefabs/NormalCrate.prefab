@@ -159,7 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pulled: 0
   thrown: 0
-  objCollider: {fileID: 54159107478772902}
+  nonTriggerCollider: {fileID: 54159107478772902}
   replacement: {fileID: 749251926994742521, guid: 08f976801a5bbc342863089c9d04905c,
     type: 3}
 --- !u!54 &1112717077

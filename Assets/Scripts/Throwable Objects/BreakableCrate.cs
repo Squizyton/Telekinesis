@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BreakableCrate : Pullable
 {
+    [Header("Class Variables")]
     [SerializeField] public GameObject replacement;
 
 
@@ -18,13 +19,13 @@ public class BreakableCrate : Pullable
         if(other.transform.TryGetComponent(out Pullable pullable))
             pullable.SpecialInteraction();
             
-        Instantiate(replacement, transform.position, transform.rotation);
-        Destroy(gameObject);
+      SpecialInteraction();
     }
 
 
     public override void SpecialInteraction()
     {
+        CinemachineShake.instance.ShakeCamera(2f,.2f);
         Instantiate(replacement, transform.position, transform.rotation);
         Destroy(gameObject);
     }

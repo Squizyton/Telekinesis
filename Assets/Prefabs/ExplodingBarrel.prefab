@@ -94,7 +94,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pulled: 0
   thrown: 0
-  objCollider: {fileID: 607066804379297039}
+  nonTriggerCollider: {fileID: 607066804379297039}
   explosionForce: {x: -30, y: 30}
   explosionRadius: 2
   currentlyExploding: 0
