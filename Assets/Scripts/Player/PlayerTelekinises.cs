@@ -8,12 +8,6 @@ using UnityEngine.UIElements;
 
 public class PlayerTelekinises : MonoBehaviour
 {
-    //TODO Refactor all of this
-   //TODO: Throwing and picking up is still a bit buggy
-    //
-
-
-
     [Header("Camera")] public Camera mainCamera;
 
     [Header("UI")] public TargetUIThing teleTargetUI;
@@ -24,8 +18,6 @@ public class PlayerTelekinises : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private bool readyToThrow;
     [SerializeField] private GameObject teleObject;
-
-
 
     [Header("Telekinisis Variables")] 
     private const float coolDownTimer = 1f;
@@ -100,7 +92,6 @@ public class PlayerTelekinises : MonoBehaviour
             readyToThrow = false;
         }
 
-      
     }
 
     private IEnumerator CoolDown()
@@ -112,11 +103,9 @@ public class PlayerTelekinises : MonoBehaviour
 
     private void PullObject(Pullable obj)
     {
-        Debug.Log('a');
         
         obj.GetPulled();
-        //Make a vector from the telekinesis point to the object
-        
+        //Make a vector from the telekinesis point to the object   
        obj.transform.DOMove(telekinesisPoint.position, 0.1f);
         
         var distance = Vector3.Distance(transform.position, telekinesisPoint.position);
