@@ -145,16 +145,9 @@ public class PlayerTelekinises : MonoBehaviour
         var ray = mainCamera.ViewportPointToRay(centerOfScreen);
 
         var direction = (Vector3.zero - telekinesisPoint.transform.position).normalized;
-
-        if (Physics.Raycast(ray, out var hit, pullDistance))
-            //Add Force to the object
-        {
-            Debug.Log(hit.point);
-        }
         
         obj.Rb.AddForce(( hit.point - telekinesisPoint.position) * throwForce, ForceMode.Impulse);
-        
-        
+                
         //Set teleObject to null
         teleObject = null;
     }
