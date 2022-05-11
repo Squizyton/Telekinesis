@@ -58,11 +58,6 @@ public class PlayerTelekinises : MonoBehaviour
         }
 
         #region Raycasting
-
-        
-        
-        
-        
         var screenPoint = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         //Make a ray that goes from the camera to the middle of the screen
         var ray = mainCamera.ScreenPointToRay(screenPoint);
